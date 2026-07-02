@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { SeederModule } from './modules/seeder/seeder.module';
+import { ProductModule } from './modules/product/product.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SeederModule } from './modules/seeder/seeder.module';
     AuthModule,
     UserModule,
     SeederModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
