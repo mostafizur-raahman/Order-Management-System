@@ -20,12 +20,12 @@ async function createDatabaseIfNotExists(): Promise<void> {
 
     if (res.rowCount === 0) {
       await client.query(`CREATE DATABASE "${ENV.DB_DATABASE}"`);
-      console.log(`✅ Database "${ENV.DB_DATABASE}" created successfully.`);
+      console.log(`Database "${ENV.DB_DATABASE}" created successfully.`);
     } else {
-      console.log(`ℹ️  Database "${ENV.DB_DATABASE}" already exists.`);
+      console.log(`ℹDatabase "${ENV.DB_DATABASE}" already exists.`);
     }
   } catch (error) {
-    console.error('❌ Failed to create database:', error.message);
+    console.error('Failed to create database:', error.message);
     throw error;
   } finally {
     await client.end();

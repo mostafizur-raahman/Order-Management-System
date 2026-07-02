@@ -26,7 +26,7 @@ export const ENV = {
 
   // JWT
   JWT_SECRET: getEnvVar('JWT_SECRET', 'super-secret-key-change-in-production'),
-  JWT_EXPIRES_IN: getEnvVar('JWT_EXPIRES_IN', '1d'),
+  JWT_EXPIRES_IN: getEnvVar('JWT_EXPIRES_IN', '1d') as string | number,
 
   // Stripe
   STRIPE_SECRET_KEY: getEnvVar('STRIPE_SECRET_KEY', ''),
@@ -34,6 +34,12 @@ export const ENV = {
 
   // Frontend URLs
   FRONTEND_URL: getEnvVar('FRONTEND_URL', 'http://localhost:3000'),
+
+  ENABLE_SEEDER: getEnvVar('ENABLE_SEEDER', 'true') === 'true',
+  SEED_ADMIN_EMAIL: getEnvVar('SEED_ADMIN_EMAIL', 'admin@example.com'),
+  SEED_ADMIN_PASSWORD: getEnvVar('SEED_ADMIN_PASSWORD', 'Admin@123'),
+  SEED_USER_EMAIL: getEnvVar('SEED_USER_EMAIL', 'user@example.com'),
+  SEED_USER_PASSWORD: getEnvVar('SEED_USER_PASSWORD', 'User@123'),
 
   // Helpers
   isProduction: (): boolean => ENV.NODE_ENV === 'production',
