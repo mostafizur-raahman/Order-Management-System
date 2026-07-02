@@ -14,7 +14,6 @@ import { RolesGuard } from './common/guards/roles.guard';
 async function bootstrap() {
   await createDatabaseIfNotExists();
 
-  // Create Winston logger with JSON format for file
   const logger = WinstonModule.createLogger({
     transports: [
       // Console transport (readable format)
@@ -53,7 +52,6 @@ async function bootstrap() {
   );
 
   // Global JWT authentication
-  // In main.ts
   app.useGlobalGuards(new JwtAuthGuard(reflector), new RolesGuard(reflector));
 
   // Register logging interceptor globally
@@ -97,7 +95,7 @@ async function bootstrap() {
 
   logger.log('Application started', 'Bootstrap');
   console.log(`Application running on: http://localhost:${ENV.PORT}`);
-  console.log(`Swagger documentation: http://localhost:${ENV.PORT}/api`);
+  console.log(`Swagger documentation: http://localhost:${ENV.PORT}/api-docs`);
 }
 
 bootstrap();

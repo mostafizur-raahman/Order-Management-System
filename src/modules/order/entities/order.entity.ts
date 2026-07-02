@@ -5,30 +5,51 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
   Index,
 } from 'typeorm';
 import { Transform } from 'class-transformer';
 import { User } from '../../user/entities/user.entity';
+import { OrderItem } from './order-item.entity';
 import { ExecutorSerializer } from 'src/common/dto/executor-user.serializer';
+import { OrderStatus } from 'src/common/enums/order-status.enum';
 
-@Entity('products')
-export class Product {
+@Entity('orders')
+export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Index()
-  @Column({ name: 'name', type: 'varchar', length: 255 })
-  name: string;
+  @Index({ unique: true })
+  @Column({ name: 'order_id', type: 'varchar', length: 50, unique: true })
+  orderId: string;
 
-  @Column({ name: 'category', type: 'varchar' })
-  category: string;
+  @Column({ name: 'is_paid', type: 'boolean', default: false })
+  isPaid: boolean;
 
-  @Column({ name: 'price', type: 'float' })
-  price: number;
+  @Column({ name: 'transaction_id', type: 'varchar', nullable: true })
+  transactionId: string;
 
-  @Column({ name: 'stock_quantity', type: 'int', default: 0 })
-  stockQuantity: number;
+  @ManyToOne(() => User, { eager: false, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @Column({ name: 'total_amount', type: 'float' })
+  totalAmount: number;
+
+  @Column({
+    name: 'status',
+    type: 'enum',
+    enum: OrderStatus,
+    default: OrderStatus.PENDING,
+  })
+  status: OrderStatus;
+
+  @OneToMany(() => OrderItem, (item) => item.order, {
+    cascade: true,
+    eager: true,
+  })
+  items: OrderItem[];
 
   @Transform(({ value }) => ExecutorSerializer.serialize(value), {
     toPlainOnly: true,
@@ -50,3 +71,4 @@ export class Product {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
+export { OrderStatus };
