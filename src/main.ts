@@ -9,6 +9,7 @@ import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { LoggingInterceptor } from './common/interceptor/logging.interceptor';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { RolesGuard } from './common/guards/roles.guard';
 
 async function bootstrap() {
   await createDatabaseIfNotExists();
@@ -52,7 +53,8 @@ async function bootstrap() {
   );
 
   // Global JWT authentication
-  app.useGlobalGuards(new JwtAuthGuard(reflector));
+  // In main.ts
+  app.useGlobalGuards(new JwtAuthGuard(reflector), new RolesGuard(reflector));
 
   // Register logging interceptor globally
   app.useGlobalInterceptors(new LoggingInterceptor());
