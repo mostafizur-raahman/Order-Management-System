@@ -28,10 +28,6 @@ export const ENV = {
   JWT_SECRET: getEnvVar('JWT_SECRET', 'super-secret-key-change-in-production'),
   JWT_EXPIRES_IN: getEnvVar('JWT_EXPIRES_IN', '1d') as string | number,
 
-  // Stripe
-  STRIPE_SECRET_KEY: getEnvVar('STRIPE_SECRET_KEY', ''),
-  STRIPE_WEBHOOK_SECRET: getEnvVar('STRIPE_WEBHOOK_SECRET', ''),
-
   // Frontend URLs
   FRONTEND_URL: getEnvVar('FRONTEND_URL', 'http://localhost:3000'),
 
