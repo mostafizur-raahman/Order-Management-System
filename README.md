@@ -97,9 +97,6 @@ cd Order-Management-System
 npm install
 npm run start:dev
 
-                or
-
-make --help // for see all how to run all command
 ```
 
 ### For Easy setup use Docker
