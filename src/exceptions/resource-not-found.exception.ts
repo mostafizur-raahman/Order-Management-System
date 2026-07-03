@@ -1,5 +1,3 @@
-// src/common/exceptions/resource-not-found.exception.ts
-
 import { HttpStatus } from '@nestjs/common';
 import { BaseException } from './base.exception';
 

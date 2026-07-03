@@ -7,23 +7,23 @@ A robust, scalable, and secure Order Management System built with NestJS, featur
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-v15-blue?style=for-the-badge&logo=postgresql)
 ![TypeORM](https://img.shields.io/badge/TypeORM-v0.3-orange?style=for-the-badge&logo=typeorm)
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Project Structure](#-project-structure)
-- [Features](#-features)
-- [Prerequisites](#-prerequisites)
-- [Installation & Setup](#-installation--setup)
-- [Database Schema](#-database-schema)
-- [API Documentation](#-api-documentation)
-- [Order ID Generation Algorithm](#-order-id-generation-algorithm)
-- [Architectural Decisions](#-architectural-decisions)
-- [Environment Variables](#-environment-variables)
+- [Project Structure](#project-structure)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation & Setup](#installation--setup)
+- [Database Schema](#database-schema)
+- [API Documentation](#api-documentation)
+- [Order ID Generation Algorithm](#order-id-generation-algorithm)
+- [Architectural Decisions](#architectural-decisions)
+- [Environment Variables](#environment-variables)
 
 ---
 
 ## Project Structure
 
-```text
+```js
 OMS/
 ├── .github/workflows/ci.yml
 ├── database/                  # SQL schema and migration files
@@ -80,14 +80,14 @@ OMS/
 - **Auto-generated Swagger Documentation**
 - **Database Seeder** for rapid development setup
 
-## 📦 Prerequisites
+## Prerequisites
 
 - **Node.js** (v18 or higher)
 - **PostgreSQL** (v14 or higher)
 - **npm** or **yarn**
 - **Git**
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### 1. Clone the Repository
 
@@ -118,7 +118,7 @@ psql -U postgres -h localhost or database server
 
 ![alt text](image.png)
 
-## 📚 API Documentation
+## API Documentation
 
 **Base URL:** `http://localhost:3000/api/v1` _(Assuming `API_PREFIX` is `/api/v1`)_
 **Authentication:** All endpoints require the header `Authorization: Bearer <JWT_TOKEN>`.
@@ -156,7 +156,7 @@ psql -U postgres -h localhost or database server
 
                               |
 
-## 🔢 Order ID Generation Algorithm
+## Order ID Generation Algorithm
 
 **Format:** `[CATEGORY]-[USER]-[YYMMDD]-[SEQ]`  
 **Example:** `ELE-9844-260703-0001`
@@ -210,3 +210,9 @@ const sequence = (count + 1).toString().padStart(6, '0');
 - **Operational Efficiency (Custom Order IDs):** Replaced standard UUIDs with a custom, multi-factor Order ID algorithm (Category-User-Date-Sequence). This generates human-readable, collision-resistant IDs that are much easier for users and support staff to track.
 
 ## Environment Variables
+
+```js
+check email for .env
+```
+
+---

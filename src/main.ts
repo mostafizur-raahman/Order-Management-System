@@ -1,22 +1,28 @@
 import { NestFactory, Reflector } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ValidationPipe, INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as fs from 'fs';
+import * as path from 'path';
+import { WINSTON_MODULE_NEST_PROVIDER, WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 import { AppModule } from './app.module';
 import { ENV } from './config/env.config';
 import { createDatabaseIfNotExists } from './scripts/create-database';
-import { WinstonModule } from 'nest-winston';
-import * as winston from 'winston';
 import { LoggingInterceptor } from './common/interceptor/logging.interceptor';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
-async function bootstrap() {
-  await createDatabaseIfNotExists();
+const LOGS_DIR = path.join(process.cwd(), 'logs');
 
-  const logger = WinstonModule.createLogger({
+function ensureLogsDir(): void {
+  if (!fs.existsSync(LOGS_DIR)) {
+    fs.mkdirSync(LOGS_DIR, { recursive: true });
+  }
+}
+
+function createWinstonLogger() {
+  return WinstonModule.createLogger({
     transports: [
-      // Console transport (readable format)
       new winston.transports.Console({
         format: winston.format.combine(
           winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -26,9 +32,8 @@ async function bootstrap() {
           }),
         ),
       }),
-      // File transport (JSON format)
       new winston.transports.File({
-        filename: 'logs/combined.log',
+        filename: path.join(LOGS_DIR, 'combined.log'),
         format: winston.format.combine(
           winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
           winston.format.json(),
@@ -36,12 +41,12 @@ async function bootstrap() {
       }),
     ],
   });
+}
 
-  const app = await NestFactory.create(AppModule, { logger });
-  const configService = app.get(ConfigService);
-  const reflector = app.get(Reflector);
-
-  // Global validation pipe
+function setupGlobalPipesAndGuards(
+  app: INestApplication,
+  reflector: Reflector,
+): void {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -51,12 +56,11 @@ async function bootstrap() {
     }),
   );
 
-  // Global JWT authentication
   app.useGlobalGuards(new JwtAuthGuard(reflector), new RolesGuard(reflector));
-
-  // Register logging interceptor globally
   app.useGlobalInterceptors(new LoggingInterceptor());
+}
 
+function setupSwagger(app: INestApplication): void {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Order Management System API')
     .setDescription(
@@ -80,12 +84,21 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api-docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-    },
+    swaggerOptions: { persistAuthorization: true },
   });
+}
 
-  // CORS
+async function bootstrap() {
+  ensureLogsDir();
+  await createDatabaseIfNotExists();
+
+  const logger = createWinstonLogger();
+  const app = await NestFactory.create(AppModule, { logger });
+  const reflector = app.get(Reflector);
+
+  setupGlobalPipesAndGuards(app, reflector);
+  setupSwagger(app);
+
   app.enableCors({
     origin: ENV.FRONTEND_URL,
     credentials: true,

@@ -12,7 +12,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class OrderItemDto {
-  @ApiProperty({ description: 'Product ID' })
+  @ApiProperty({
+    description: 'Product ID',
+    example: '48d5cf8c-d44a-4ca1-8134-31d0df1368fc',
+  })
   @IsUUID()
   productId: string;
 

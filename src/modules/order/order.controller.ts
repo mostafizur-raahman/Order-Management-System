@@ -17,6 +17,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiQuery,
+  ApiParam,
 } from '@nestjs/swagger';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -37,7 +38,19 @@ export class OrderController {
 
   @Post('/create')
   @Roles(Role.ADMIN, Role.USER)
-  @ApiOperation({ summary: 'Create a new order' })
+  @ApiOperation({
+    summary: 'Create a new order with automatic stock reduction',
+  })
+  @ApiResponse({ status: 201, description: 'Order created successfully' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Empty items or insufficient stock',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing token',
+  })
+  @ApiResponse({ status: 404, description: 'Product not found' })
   async create(
     @Res() res: Response,
     @Body() createOrderDto: CreateOrderDto,
@@ -53,12 +66,46 @@ export class OrderController {
   @ApiOperation({
     summary: 'Get all orders for the logged-in user with filters',
   })
-  @ApiQuery({ name: 'orderId', required: false })
-  @ApiQuery({ name: 'status', required: false })
-  @ApiQuery({ name: 'isPaid', required: false })
-  @ApiQuery({ name: 'searchKey', required: false })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'size', required: false, type: Number })
+  @ApiQuery({
+    name: 'orderId',
+    required: false,
+    description: 'Filter by human-readable order ID',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Filter by order status (e.g., PENDING, SHIPPED)',
+  })
+  @ApiQuery({
+    name: 'isPaid',
+    required: false,
+    description: 'Filter by payment status (true/false)',
+  })
+  @ApiQuery({
+    name: 'searchKey',
+    required: false,
+    description: 'Global search across order IDs',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default: 0)',
+  })
+  @ApiQuery({
+    name: 'size',
+    required: false,
+    type: Number,
+    description: 'Items per page (default: 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of user orders retrieved successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing token',
+  })
   async getMyOrders(
     @Res() res: Response,
     @CurrentUser() user: any,
@@ -88,17 +135,75 @@ export class OrderController {
 
   @Get()
   @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Get all orders with filters (Admin only)' })
-  @ApiQuery({ name: 'id', required: false })
-  @ApiQuery({ name: 'orderId', required: false })
-  @ApiQuery({ name: 'status', required: false })
-  @ApiQuery({ name: 'isPaid', required: false })
-  @ApiQuery({ name: 'userId', required: false })
-  @ApiQuery({ name: 'minAmount', required: false, type: Number })
-  @ApiQuery({ name: 'maxAmount', required: false, type: Number })
-  @ApiQuery({ name: 'searchKey', required: false })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'size', required: false, type: Number })
+  @ApiOperation({
+    summary: 'Get all orders with advanced filters (Admin only)',
+  })
+  @ApiQuery({
+    name: 'id',
+    required: false,
+    description: 'Filter by exact internal UUID',
+  })
+  @ApiQuery({
+    name: 'orderId',
+    required: false,
+    description: 'Filter by human-readable order ID',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    description: 'Filter by order status',
+  })
+  @ApiQuery({
+    name: 'isPaid',
+    required: false,
+    description: 'Filter by payment status (true/false)',
+  })
+  @ApiQuery({
+    name: 'userId',
+    required: false,
+    description: 'Filter by specific user UUID',
+  })
+  @ApiQuery({
+    name: 'minAmount',
+    required: false,
+    type: Number,
+    description: 'Minimum total amount',
+  })
+  @ApiQuery({
+    name: 'maxAmount',
+    required: false,
+    type: Number,
+    description: 'Maximum total amount',
+  })
+  @ApiQuery({
+    name: 'searchKey',
+    required: false,
+    description: 'Global search across order IDs',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default: 0)',
+  })
+  @ApiQuery({
+    name: 'size',
+    required: false,
+    type: Number,
+    description: 'Items per page (default: 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of all orders retrieved successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing token',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Admin access required',
+  })
   async findAll(
     @Res() res: Response,
     @Query('id') id?: string,
@@ -134,7 +239,17 @@ export class OrderController {
 
   @Get(':id')
   @Roles(Role.ADMIN, Role.USER)
-  @ApiOperation({ summary: 'Get order by ID' })
+  @ApiOperation({ summary: 'Get order details by ID' })
+  @ApiParam({ name: 'id', description: 'Order UUID', type: String })
+  @ApiResponse({
+    status: 200,
+    description: 'Order details retrieved successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Order not found' })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing token',
+  })
   async findOne(@Res() res: Response, @Param('id') id: string) {
     return res
       .status(HttpStatus.OK)
@@ -144,6 +259,24 @@ export class OrderController {
   @Patch(':id/status')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Update order status (Admin only)' })
+  @ApiParam({ name: 'id', description: 'Order UUID', type: String })
+  @ApiResponse({
+    status: 200,
+    description: 'Order status updated successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Cannot update a cancelled order',
+  })
+  @ApiResponse({ status: 404, description: 'Order not found' })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing token',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Admin access required',
+  })
   async updateStatus(
     @Res() res: Response,
     @Param('id') id: string,
@@ -164,6 +297,17 @@ export class OrderController {
   @Patch(':id/cancel')
   @Roles(Role.ADMIN, Role.USER)
   @ApiOperation({ summary: 'Cancel an order' })
+  @ApiParam({ name: 'id', description: 'Order UUID', type: String })
+  @ApiResponse({ status: 200, description: 'Order cancelled successfully' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Cannot cancel a delivered order',
+  })
+  @ApiResponse({ status: 404, description: 'Order not found' })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing token',
+  })
   async cancel(
     @Res() res: Response,
     @Param('id') id: string,

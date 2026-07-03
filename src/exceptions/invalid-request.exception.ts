@@ -1,5 +1,3 @@
-// src/common/exceptions/invalid-request.exception.ts
-
 import { HttpStatus } from '@nestjs/common';
 import { BaseException } from './base.exception';
 

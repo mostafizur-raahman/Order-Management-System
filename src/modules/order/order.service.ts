@@ -38,7 +38,6 @@ export class OrderService {
       throw new BadRequestException('Order must contain at least one item');
     }
 
-    // Transaction for sequence in order  and avoid negative
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -64,6 +63,7 @@ export class OrderService {
           );
         }
 
+        // reduce the stock
         product.stockQuantity -= itemDto.quantity;
         await queryRunner.manager.save(product);
 
@@ -186,9 +186,12 @@ export class OrderService {
       throw new ResourceNotFoundException(`Order not found with id ${id}`);
     }
 
-    if (order.status === OrderStatus.CANCELLED) {
+    if (
+      order.status === OrderStatus.CANCELLED ||
+      order.status === OrderStatus.DELIVERED
+    ) {
       throw new BadRequestException(
-        'Cannot update status of a cancelled order',
+        'Cannot update status of a cancelled/delivered order',
       );
     }
 
@@ -211,29 +214,23 @@ export class OrderService {
 
   async cancelOrder(id: string, cancelledBy: any): Promise<any> {
     const order = await this.orderRepository.findById(id);
+
     if (!order) {
-      throw new NotFoundException(`Order not found with id ${id}`);
+      throw new ResourceNotFoundException(`Order not found with id ${id}`);
     }
 
     if (order.status === OrderStatus.DELIVERED) {
       throw new BadRequestException('Cannot cancel a delivered order');
     }
 
-    // Update properties manually
-    const cancelledOrder = new Order();
-    cancelledOrder.id = order.id;
-    cancelledOrder.orderId = order.orderId;
-    cancelledOrder.user = order.user;
-    cancelledOrder.items = order.items;
-    cancelledOrder.totalAmount = order.totalAmount;
-    cancelledOrder.isPaid = order.isPaid;
-    cancelledOrder.transactionId = order.transactionId;
-    cancelledOrder.createdBy = order.createdBy;
+    if (order.status === OrderStatus.CANCELLED) {
+      throw new BadRequestException('Cannot cancel a cancle order');
+    }
 
-    cancelledOrder.status = OrderStatus.CANCELLED;
-    cancelledOrder.updatedBy = cancelledBy;
+    order.status = OrderStatus.CANCELLED;
+    order.updatedBy = cancelledBy;
 
-    const savedOrder = await this.orderRepository.save(cancelledOrder);
+    const savedOrder = await this.orderRepository.save(order);
     return instanceToPlain(savedOrder);
   }
 }

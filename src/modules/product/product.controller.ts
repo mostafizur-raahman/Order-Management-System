@@ -18,6 +18,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiQuery,
+  ApiParam,
 } from '@nestjs/swagger';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -39,15 +40,58 @@ export class ProductController {
   @Get()
   @Roles(Role.ADMIN, Role.USER)
   @ApiOperation({ summary: 'Search and filter products with pagination' })
-  @ApiQuery({ name: 'id', required: false })
-  @ApiQuery({ name: 'name', required: false })
-  @ApiQuery({ name: 'category', required: false })
-  @ApiQuery({ name: 'minPrice', required: false, type: Number })
-  @ApiQuery({ name: 'maxPrice', required: false, type: Number })
-  @ApiQuery({ name: 'searchKey', required: false })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'size', required: false, type: Number })
-  @ApiResponse({ status: 200, description: 'Paginated list of products' })
+  @ApiQuery({
+    name: 'id',
+    required: false,
+    description: 'Filter by exact product ID',
+  })
+  @ApiQuery({
+    name: 'name',
+    required: false,
+    description: 'Filter by product name (partial match)',
+  })
+  @ApiQuery({
+    name: 'category',
+    required: false,
+    description: 'Filter by category (partial match)',
+  })
+  @ApiQuery({
+    name: 'minPrice',
+    required: false,
+    type: Number,
+    description: 'Minimum price filter',
+  })
+  @ApiQuery({
+    name: 'maxPrice',
+    required: false,
+    type: Number,
+    description: 'Maximum price filter',
+  })
+  @ApiQuery({
+    name: 'searchKey',
+    required: false,
+    description: 'Global search across name and category',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default: 0)',
+  })
+  @ApiQuery({
+    name: 'size',
+    required: false,
+    type: Number,
+    description: 'Items per page (default: 10)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of products retrieved successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing token',
+  })
   async findAll(
     @Res() res: Response,
     @Query('id') id?: string,
@@ -77,8 +121,13 @@ export class ProductController {
   @Get('/:id')
   @Roles(Role.ADMIN, Role.USER)
   @ApiOperation({ summary: 'Get product by ID' })
-  @ApiResponse({ status: 200, description: 'Product found' })
+  @ApiParam({ name: 'id', description: 'Product UUID', type: String })
+  @ApiResponse({ status: 200, description: 'Product found successfully' })
   @ApiResponse({ status: 404, description: 'Product not found' })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing token',
+  })
   async findOne(@Res() res: Response, @Param('id') id: string) {
     return res
       .status(HttpStatus.OK)
@@ -89,7 +138,19 @@ export class ProductController {
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Create a new product (Admin only)' })
   @ApiResponse({ status: 201, description: 'Product created successfully' })
-  @ApiResponse({ status: 409, description: 'Product already exists' })
+  @ApiResponse({ status: 400, description: 'Bad request - Validation failed' })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict - Product with this name already exists',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Admin access required',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing token',
+  })
   async create(
     @Res() res: Response,
     @Body() createProductDto: CreateProductDto,
@@ -103,8 +164,22 @@ export class ProductController {
   @Patch('/:id')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Update a product (Admin only)' })
+  @ApiParam({ name: 'id', description: 'Product UUID', type: String })
   @ApiResponse({ status: 200, description: 'Product updated successfully' })
   @ApiResponse({ status: 404, description: 'Product not found' })
+  @ApiResponse({ status: 400, description: 'Bad request - Validation failed' })
+  @ApiResponse({
+    status: 409,
+    description: 'Conflict - Product with this name already exists',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Admin access required',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing token',
+  })
   async update(
     @Res() res: Response,
     @Param('id') id: string,
@@ -119,8 +194,17 @@ export class ProductController {
   @Delete('/:id')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Delete a product (Admin only)' })
+  @ApiParam({ name: 'id', description: 'Product UUID', type: String })
   @ApiResponse({ status: 200, description: 'Product deleted successfully' })
   @ApiResponse({ status: 404, description: 'Product not found' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Admin access required',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Invalid or missing token',
+  })
   async remove(@Res() res: Response, @Param('id') id: string) {
     await this.productService.remove(id);
     return res

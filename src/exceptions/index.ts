@@ -1,5 +1,3 @@
-// src/common/exceptions/index.ts
-
 export * from './bad-gateway.exception';
 export * from './data-processing.exception';
 export * from './file-storage.exception';
