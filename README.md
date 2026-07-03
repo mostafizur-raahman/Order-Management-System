@@ -176,7 +176,7 @@ psql -U postgres -h localhost or database server
 **Authentication:** All endpoints require the header `Authorization: Bearer <JWT_TOKEN>`.
 **Swagger docs:** `http://localhost:3000/api-docs`
 
-### 👤 Users Module
+### Users Module
 
 | Method   | Endpoint     | Description           | Access | Parameters / Body                                            |
 | :------- | :----------- | :-------------------- | :----- | :----------------------------------------------------------- |
@@ -186,7 +186,7 @@ psql -U postgres -h localhost or database server
 | `PATCH`  | `/users/:id` | Update user details   | Admin  | **Path:** `id`, **Body:** `UpdateUserDto`                    |
 | `DELETE` | `/users/:id` | Delete a user         | Admin  | **Path:** `id`                                               |
 
-### 📦 Products Module
+### Products Module
 
 | Method   | Endpoint           | Description              | Access      | Parameters / Body                                                                        |
 | :------- | :----------------- | :----------------------- | :---------- | :--------------------------------------------------------------------------------------- |
@@ -230,7 +230,7 @@ The ID combines four independent factors, making collisions mathematically impos
 - **Hard Constraint:** `UNIQUE` database index on `order_id` physically prevents duplicates
 - **Daily Reset:** Counter automatically restarts at `0001` when the date changes
 
-### 📊 Maximum Orders Per User
+### Maximum Orders Per User
 
 Based on the 4-digit sequence (`0001` to `9999`), the limits are:
 
