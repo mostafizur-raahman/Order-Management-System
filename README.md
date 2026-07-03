@@ -102,8 +102,8 @@ npm run start:dev
 ### For Easy setup use Docker
 
 ````js
-- **Docker** (v20.10 or higher)
-- **Docker Compose** (v2.0 or higher)
+- Docker (v20.10 or higher)
+- Docker Compose (v2.0 or higher)
 
 ### Check Installation
 
