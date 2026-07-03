@@ -174,6 +174,7 @@ psql -U postgres -h localhost or database server
 
 **Base URL:** `http://localhost:3000/api/v1` _(Assuming `API_PREFIX` is `/api/v1`)_
 **Authentication:** All endpoints require the header `Authorization: Bearer <JWT_TOKEN>`.
+**Swagger docs:** `http://localhost:3000/api-docs`
 
 ### 👤 Users Module
 
