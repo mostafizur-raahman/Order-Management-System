@@ -80,8 +80,6 @@ OMS/
 - **Auto-generated Swagger Documentation**
 - **Database Seeder** for rapid development setup
 
----
-
 ## 📦 Prerequisites
 
 - **Node.js** (v18 or higher)
