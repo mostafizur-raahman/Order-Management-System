@@ -95,7 +95,59 @@ OMS/
 git clone https://github.com/mostafizur-raahman/Order-Management-System.git
 cd Order-Management-System
 npm install
+
+make --help // for see all how to run all command
 ```
+
+### For Easy setup use Docker
+
+````js
+- **Docker** (v20.10 or higher)
+- **Docker Compose** (v2.0 or higher)
+
+### Check Installation
+
+```js
+For shortcut see all command
+
+install make:
+mac: brew install make
+
+ubuntu:
+sudo apt update
+sudo apt install make
+
+run : make help
+Usage: make [target]
+
+Available targets:
+   help          Show this help message
+   install       Install project dependencies
+   build         Build the application for production
+   start         Start the application in production mode
+   dev           Start the application in development mode (with hot-reload)
+   test          Run unit tests
+   lint          Run ESLint to check for code issues
+   format        Format code using Prettier
+   docker-up     Build and start Docker containers in the background
+   docker-down   Stop and remove Docker containers and volumes
+   docker-logs   View live logs for the API container
+```bash
+# Check Docker version
+docker --version
+
+# Check Docker Compose version
+docker compose version
+
+run in terminal:
+
+docker compose config
+docker compose up -d --build
+docker compose ps
+docker compose logs -f
+docker compose down -v
+
+````
 
 ## Database Schema
 
