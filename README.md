@@ -87,8 +87,6 @@ OMS/
 - **npm** or **yarn**
 - **Git**
 
----
-
 ## 🚀 Installation & Setup
 
 ### 1. Clone the Repository
