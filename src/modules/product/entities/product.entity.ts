@@ -30,6 +30,9 @@ export class Product {
   @Column({ name: 'stock_quantity', type: 'int', default: 0 })
   stockQuantity: number;
 
+  @Column({ name: 'is_active', type: 'boolean', default: true })
+  isActive: boolean;
+
   @Transform(({ value }) => ExecutorSerializer.serialize(value), {
     toPlainOnly: true,
   })

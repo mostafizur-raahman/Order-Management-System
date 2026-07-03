@@ -12,8 +12,8 @@ import {
 import { Transform } from 'class-transformer';
 import { User } from '../../user/entities/user.entity';
 import { OrderItem } from './order-item.entity';
-import { ExecutorSerializer } from 'src/common/dto/executor-user.serializer';
 import { OrderStatus } from 'src/common/enums/order-status.enum';
+import { ExecutorSerializer } from 'src/common/dto/executor-user.serializer';
 
 @Entity('orders')
 export class Order {
@@ -34,7 +34,12 @@ export class Order {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ name: 'total_amount', type: 'float' })
+  @Column({
+    name: 'total_amount',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+  })
   totalAmount: number;
 
   @Column({
@@ -71,4 +76,5 @@ export class Order {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
+
 export { OrderStatus };

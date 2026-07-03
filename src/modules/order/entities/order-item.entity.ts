@@ -22,9 +22,15 @@ export class OrderItem {
   @Column({ name: 'category', type: 'varchar' })
   category: string;
 
-  @Column({ name: 'quantiry', type: 'int' })
+  @Column({ name: 'quantity', type: 'int', default: 1 })
   quantity: number;
 
-  @Column({ name: 'price', type: 'float' })
+  @Column({
+    name: 'price',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    default: 0,
+  })
   price: number;
 }

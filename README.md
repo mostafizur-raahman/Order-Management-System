@@ -1,98 +1,216 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Order Management System (OMS)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A robust, scalable, and secure Order Management System built with NestJS, featuring JWT authentication, role-based access control, advanced filtering, and a custom human-readable Order ID generation algorithm.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+![NestJS](https://img.shields.io/badge/NestJS-v10-red?style=for-the-badge&logo=nestjs)
+![TypeScript](https://img.shields.io/badge/TypeScript-v5-blue?style=for-the-badge&logo=typescript)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-v15-blue?style=for-the-badge&logo=postgresql)
+![TypeORM](https://img.shields.io/badge/TypeORM-v0.3-orange?style=for-the-badge&logo=typeorm)
 
-## Description
+## 📋 Table of Contents
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [Project Structure](#-project-structure)
+- [Features](#-features)
+- [Prerequisites](#-prerequisites)
+- [Installation & Setup](#-installation--setup)
+- [Database Schema](#-database-schema)
+- [API Documentation](#-api-documentation)
+- [Order ID Generation Algorithm](#-order-id-generation-algorithm)
+- [Architectural Decisions](#-architectural-decisions)
+- [Environment Variables](#-environment-variables)
 
-## Project setup
+---
 
-```bash
-$ npm install
+## Project Structure
+
+```text
+OMS/
+├── .github/workflows/ci.yml
+├── database/                  # SQL schema and migration files
+├── dist/                      # Compiled JavaScript output (generated)
+├── logs/                      # Application log files (generated)
+├── node_modules/              # Dependencies (generated)
+├── src/
+│   ├── common/                # Shared reusable code
+│   │   ├── decorators/        # Custom decorators (@Roles, @Public, etc.)
+│   │   ├── dto/               # Shared DTOs (Pagination, PageRequest)
+│   │   ├── enums/             # Shared enums (Role)
+│   │   ├── guards/            # Global guards (JwtAuthGuard)
+│   │   └── interceptor/       # Logging interceptor
+│   ├── config/                # Application configuration
+│   │   ├── configuration.ts
+│   │   ├── database.config.ts
+│   │   └── env.config.ts
+│   ├── constants/             # Global constants
+│   │   └── project.constant.ts
+│   ├── database/              # Database module configuration
+│   │   └── database.module.ts
+│   ├── exceptions/            # Custom exception classes
+│   ├── modules/               # Feature modules
+│   │   ├── auth/              # Authentication (Login, Register, JWT)
+│   │   ├── order/             # Order processing & Custom ID generation
+│   │   ├── product/           # Product catalog management
+│   │   ├── seeder/            # Database seeding for development
+│   │   └── user/              # User management
+│   ├── app.controller.spec.ts
+│   ├── app.controller.ts
+│   ├── app.module.ts          # Root application module
+│   ├── app.service.ts
+│   └── main.ts                # Application entry point
+├── test/                      # E2E tests
+├── .env                       # Environment variables
+├── .gitignore
+├── Makefile
+├── docker-compose.yaml
+├── .prettierrc
+├── eslint.config.mjs
+├── nest-cli.json
+└── README.md
 ```
 
-## Compile and run the project
+## Features
 
-```bash
-# development
-$ npm run start
+- **JWT Authentication** with role-based access control (Admin/User)
+- **Product Management** with real-time stock tracking and validation
+- **Order Processing** with automatic stock reduction and transaction safety
+- **Custom Order ID Generation** (Human-readable, unique, and sequential)
+- **Concurrency Control** using Database Transactions and Pessimistic Locking(For avoiding negetive stock)
+- **Advanced Filtering & Pagination** using the Specification Pattern
+- **Comprehensive Logging** using Winston
+- **Auto-generated Swagger Documentation**
+- **Database Seeder** for rapid development setup
 
-# watch mode
-$ npm run start:dev
+---
 
-# production mode
-$ npm run start:prod
+## 📦 Prerequisites
+
+- **Node.js** (v18 or higher)
+- **PostgreSQL** (v14 or higher)
+- **npm** or **yarn**
+- **Git**
+
+---
+
+## 🚀 Installation & Setup
+
+### 1. Clone the Repository
+
+```sh
+git clone https://github.com/mostafizur-raahman/Order-Management-System.git
+cd Order-Management-System
+npm install
 ```
 
-## Run tests
+## Database Schema
 
-```bash
-# unit tests
-$ npm run test
+#### Relationship
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```js
+Relationships Shown:
+USER → ORDER (One-to-Many)
+ORDER → ORDER_ITEM (One-to-Many)
+USER → PRODUCT (One-to-Many, via createdBy/updatedBy)
 ```
 
-## Deployment
+```js
+If you prefer to use the raw SQL schema instead of TypeORM synchronization:
+psql -U postgres -h localhost or database server
+\c order_management_system
+\i `your_pwd`/database/schema.sql
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+![alt text](image.png)
 
-## Resources
+## 📚 API Documentation
 
-Check out a few resources that may come in handy when working with NestJS:
+**Base URL:** `http://localhost:3000/api/v1` _(Assuming `API_PREFIX` is `/api/v1`)_
+**Authentication:** All endpoints require the header `Authorization: Bearer <JWT_TOKEN>`.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 👤 Users Module
 
-## Support
+| Method   | Endpoint     | Description           | Access | Parameters / Body                                            |
+| :------- | :----------- | :-------------------- | :----- | :----------------------------------------------------------- |
+| `GET`    | `/users`     | Search & filter users | Admin  | **Query:** `id`, `name`, `email`, `isActive`, `page`, `size` |
+| `GET`    | `/users/:id` | Get user by ID        | Admin  | **Path:** `id`                                               |
+| `POST`   | `/users`     | Create a new user     | Admin  | **Body:** `CreateUserDto`                                    |
+| `PATCH`  | `/users/:id` | Update user details   | Admin  | **Path:** `id`, **Body:** `UpdateUserDto`                    |
+| `DELETE` | `/users/:id` | Delete a user         | Admin  | **Path:** `id`                                               |
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 📦 Products Module
 
-## Stay in touch
+| Method   | Endpoint           | Description              | Access      | Parameters / Body                                                                        |
+| :------- | :----------------- | :----------------------- | :---------- | :--------------------------------------------------------------------------------------- |
+| `GET`    | `/products`        | Search & filter products | Admin, User | **Query:** `id`, `name`, `category`, `minPrice`, `maxPrice`, `searchKey`, `page`, `size` |
+| `GET`    | `/products/:id`    | Get product by ID        | Admin, User | **Path:** `id`                                                                           |
+| `POST`   | `/products/create` | Create a new product     | Admin       | **Body:** `CreateProductDto`                                                             |
+| `PATCH`  | `/products/:id`    | Update product details   | Admin       | **Path:** `id`, **Body:** `UpdateProductDto`                                             |
+| `DELETE` | `/products/:id`    | Delete a product         | Admin       | **Path:** `id`                                                                           |
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Orders Module
 
-## License
+| Method  | Endpoint             | Description                 | Access      | Parameters / Body                                                                                               |
+| :------ | :------------------- | :-------------------------- | :---------- | :-------------------------------------------------------------------------------------------------------------- |
+| `POST`  | `/orders/create`     | Create a new order          | Admin, User | **Body:** `CreateOrderDto`                                                                                      |
+| `GET`   | `/orders/my-orders`  | Get logged-in user's orders | Admin, User | **Query:** `orderId`, `status`, `isPaid`, `searchKey`, `page`, `size`                                           |
+| `GET`   | `/orders`            | Get all orders (Admin view) | Admin       | **Query:** `id`, `orderId`, `status`, `isPaid`, `userId`, `minAmount`, `maxAmount`, `searchKey`, `page`, `size` |
+| `GET`   | `/orders/:id`        | Get order by ID             | Admin, User | **Path:** `id`                                                                                                  |
+| `PATCH` | `/orders/:id/status` | Update order status         | Admin       | **Path:** `id`, **Body:** `UpdateOrderStatusDto`                                                                |
+| `PATCH` | `/orders/:id/cancel` | Cancel an order             | Admin, User | **Path:** `id`                                                                                                  |
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+                              |
+
+## 🔢 Order ID Generation Algorithm
+
+**Format:** `[CATEGORY]-[USER]-[YYMMDD]-[SEQ]`  
+**Example:** `ELE-9844-260703-0001`
+
+### Why It's Unique
+
+The ID combines four independent factors, making collisions mathematically impossible:
+
+- **Category Prefix:** 3-letter code from the first product (e.g., `ELE`)
+- **User Identifier:** First 4 characters of the customer's UUID (e.g., `9844`)
+- **Date Isolation:** `YYMMDD` format guarantees uniqueness per day
+- **Atomic Sequence:** Sequential counter (`0001`, `0002`) scoped to the exact category+user+day
+
+### Uniqueness Guarantees
+
+- **Row-Level Locking:** `SELECT ... FOR UPDATE` blocks concurrent reads during sequence generation
+- **Atomic Transactions:** ID creation and stock deduction run in a single DB transaction
+- **Hard Constraint:** `UNIQUE` database index on `order_id` physically prevents duplicates
+- **Daily Reset:** Counter automatically restarts at `0001` when the date changes
+
+### 📊 Maximum Orders Per User
+
+Based on the 4-digit sequence (`0001` to `9999`), the limits are:
+
+- **Per Category, Per Day:** **9,999 orders** (e.g., 9,999 Electronics orders on July 3rd).
+- **Per Day (All Categories):** **9,999 × Total Categories** (e.g., if you have 5 categories, 49,995 orders/day).
+- **Lifetime:** **Unlimited** (the counter resets daily).
+
+### What if you hit 9,999?
+
+Simply increase the padding in the code from 4 to 5 or 6 digits:
+
+```typescript
+// Current (Max 9,999)
+const sequence = (count + 1).toString().padStart(4, '0');
+
+// Scaled up (Max 999,999)
+const sequence = (count + 1).toString().padStart(6, '0');
+```
+
+## Architectural Decisions
+
+- **Concurrency & Stock Integrity:** Unlike Go or Java, which feature built-in concurrency and locking mechanisms, Node.js is single-threaded and lacks native row-locking. To prevent race conditions and negative stock during high-concurrency checkouts, I implemented **Database Pessimistic Locking** within atomic transactions. This physically locks product rows at the database level, forcing concurrent requests to queue safely.
+
+- **Dynamic Querying (Specification Pattern):** Replaced complex conditional filtering with the Specification Pattern. This cleanly separates SQL query logic from business logic, making filters modular, reusable, and highly testable.
+
+- **Historical Data Accuracy (Snapshot Pattern):** Order items store the product name, category, and price at the exact moment of purchase. This ensures historical financial records remain 100% accurate, even if the product is later updated or deleted from the catalog.
+
+- **Security (RBAC):** Enforced strict access boundaries using global JWT authentication combined with Role-Based Access Control (RBAC) decorators, ensuring only authorized admins can perform sensitive operations.
+
+- **Operational Efficiency (Custom Order IDs):** Replaced standard UUIDs with a custom, multi-factor Order ID algorithm (Category-User-Date-Sequence). This generates human-readable, collision-resistant IDs that are much easier for users and support staff to track.
+
+## Environment Variables
