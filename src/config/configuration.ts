@@ -19,8 +19,4 @@ export default () => ({
     secret: ENV.JWT_SECRET,
     expiresIn: ENV.JWT_EXPIRES_IN,
   },
-  stripe: {
-    secretKey: ENV.STRIPE_SECRET_KEY,
-    webhookSecret: ENV.STRIPE_WEBHOOK_SECRET,
-  },
 });
