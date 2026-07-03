@@ -95,6 +95,9 @@ OMS/
 git clone https://github.com/mostafizur-raahman/Order-Management-System.git
 cd Order-Management-System
 npm install
+npm run start:dev
+
+                or
 
 make --help // for see all how to run all command
 ```
